@@ -1,10 +1,12 @@
 micronaut:
   application:
     name: reactive
+  server:
+    port: 8083
 r2dbc:
   datasources:
     default:
-      url: r2dbc:oracle://localhost:11521:XE;DB_CLOSE_ON_EXIT=FALSE
+      url: r2dbc:oracle://localhost:11521:XE
       username: SYSTEM
       password: testing12345
       schema-generate: NONE

@@ -26,16 +26,23 @@ dependencies {
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.data:micronaut-data-r2dbc")
     implementation("io.micronaut.r2dbc:micronaut-r2dbc-core")
-    implementation("io.micronaut.sql:micronaut-jdbc-ucp")
+//    implementation("io.micronaut.sql:micronaut-jdbc-ucp")
+    runtimeOnly("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("javax.annotation:javax.annotation-api")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.oracle.database.r2dbc:oracle-r2dbc:0.2.0")
+//    compileOnly('io.r2dbc:r2dbc-spi:0.8.4.RELEASE')
+    //compileOnly('io.r2dbc:r2dbc-pool:0.8.0.RELEASE')
     implementation("io.micronaut:micronaut-validation")
     implementation("io.projectreactor:reactor-core")
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 }
 
+
+configurations.all {
+    resolutionStrategy.force 'io.r2dbc:r2dbc-spi:0.8.4.RELEASE'
+}
 
 application {
     mainClass.set("com.example.Application")

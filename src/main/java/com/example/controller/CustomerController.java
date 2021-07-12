@@ -1,10 +1,13 @@
 package com.example.controller;
 
+import com.example.models.CustomerEntity;
 import com.example.service.CustomerService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
+import reactor.core.publisher.Mono;
+
 import javax.inject.Inject;
 
 @Controller("/customers")
@@ -18,8 +21,7 @@ public class CustomerController {
   }
 
   @Get("/{customerId}")
-  public HttpResponse get(@PathVariable Long customerId) {
-    customerService.getCustomer(customerId);
-    return HttpResponse.ok();
+  public Mono<CustomerEntity> get(@PathVariable Long customerId) {
+    return customerService.getCustomer(customerId);
   }
 }
