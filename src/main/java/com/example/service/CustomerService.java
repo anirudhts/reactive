@@ -19,8 +19,11 @@ public class CustomerService {
   public Mono<CustomerEntity> getCustomer(Long customerId) {
 
     Mono<CustomerEntity> monoCustomerEntity =
-        customerReactiveRepository.findByCustomerId(customerId);
+        customerReactiveRepository
+            .findByCustomerId(customerId)
+            .then(Mono.error(new IllegalArgumentException("I am pushing the error")));
     System.out.println("Mono object vandhirukku " + monoCustomerEntity);
 
-    return   monoCustomerEntity;}
+    return monoCustomerEntity;
+  }
 }
