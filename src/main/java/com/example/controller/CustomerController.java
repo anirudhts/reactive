@@ -1,10 +1,13 @@
 package com.example.controller;
 
 import com.example.models.Customer;
+import com.example.models.CustomerEntity;
 import com.example.service.CustomerService;
+import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
 import javax.inject.Inject;
 import reactor.core.publisher.Mono;
 
@@ -26,17 +29,23 @@ public class CustomerController {
         .getCustomer(customerId)
         .map(
             customerEntity -> {
-              Customer crust = new Customer();
-              crust.setCustomerId(customerEntity.getCustomerId());
-              crust.setName(customerEntity.getName());
+              System.out.println("customer present" + customerEntity);
+              Customer crust = new Customer(customerEntity);
               return crust;
             })
         .onErrorResume(
             (err) -> {
+              System.out.println("customer error");
+              err.printStackTrace();
               final Customer crust1 = new Customer();
               crust1.setName(err.getMessage());
               return Mono.just(crust1);
             })
         .defaultIfEmpty(crust2);
+  }
+
+  @Post("/")
+  public Mono<CustomerEntity> post(@Body Customer customer) {
+    return customerService.saveCustomer(customer);
   }
 }
