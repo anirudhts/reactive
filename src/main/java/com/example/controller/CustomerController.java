@@ -3,12 +3,15 @@ package com.example.controller;
 import com.example.models.Customer;
 import com.example.models.CustomerEntity;
 import com.example.service.CustomerService;
+import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
+import java.time.Duration;
 import javax.inject.Inject;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Controller("/customers")
@@ -24,17 +27,19 @@ public class CustomerController {
   @Get("/{customerId}")
   public Mono<Customer> get(@PathVariable Long customerId) {
     final Customer crust2 = new Customer();
-    crust2.setName("Anirudh");
+    crust2.setName("Customer not there");
+    System.out.println("curr thread before calling repo " + Thread.currentThread().getName());
     return customerService
         .getCustomer(customerId)
-        .map(
+        .map( // goes into this if object is present
             customerEntity -> {
               System.out.println("customer present" + customerEntity);
+              System.out.println("curr thread" + Thread.currentThread().getName());
               Customer crust = new Customer(customerEntity);
               return crust;
             })
         .onErrorResume(
-            (err) -> {
+            (err) -> { // if error occurs
               System.out.println("customer error");
               err.printStackTrace();
               final Customer crust1 = new Customer();
@@ -47,5 +52,10 @@ public class CustomerController {
   @Post("/")
   public Mono<CustomerEntity> post(@Body Customer customer) {
     return customerService.saveCustomer(customer);
+  }
+
+  @Get(value = "/stream", produces = MediaType.APPLICATION_JSON_STREAM)
+  public Flux<Integer> getStreamOfElements() {
+    return Flux.range(1, 5).delayElements(Duration.ofSeconds(1)).log();
   }
 }

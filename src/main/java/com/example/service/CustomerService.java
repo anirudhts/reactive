@@ -23,8 +23,38 @@ public class CustomerService {
   }
 
   public Mono<CustomerEntity> getCustomer(Long customerId) {
+    return customerAerospikeReactiveRepository
+        .findByCustomerId(customerId)
+        .log()
+        .switchIfEmpty(
+            customerReactiveRepository
+                .findByCustomerId(customerId)
+                //                            .doOnNext(customerEntity -> {
+                //
+                // customerAerospikeReactiveRepository.saveCustomer(customerEntity).log().subscribe();
+                //                            }).log()
+                .flatMap(
+                    customerEntity -> {
+                      System.out.println(
+                          "Flat map just before execution " + Thread.currentThread().getName());
+                      return customerAerospikeReactiveRepository
+                          .saveCustomer(customerEntity)
+                          .map(
+                              (customerEntity1 -> {
+                                System.out.println(
+                                    "Flat map executing" + Thread.currentThread().getName());
+                                return customerEntity1;
+                              }));
+                    })
+                .log());
 
-    return customerAerospikeReactiveRepository.findByCustomerId(customerId);
+    //    return customerAerospikeReactiveRepository.findByCustomerId(customerId)
+    //            .log()
+    //            .map()
+    //            .switchIfEmpty(customerReactiveRepository.findByCustomerId(customerId))
+    //            .map(c)
+    //            .switchIfEmpty(customerReactiveRepository.findByCustomerId(customerId))
+    //            .doOnSuccess((customer)->customerReactiveRepository.save(customer));
 
     //    Mono<CustomerEntity> monoCustomerEntity =
     //        customerReactiveRepository
