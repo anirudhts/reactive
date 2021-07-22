@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Controller("/customers")
+@Controller("/customer")
 public class CustomerController {
 
   private final CustomerService customerService;
@@ -52,6 +52,16 @@ public class CustomerController {
   @Post("/")
   public Mono<CustomerEntity> post(@Body Customer customer) {
     return customerService.saveCustomer(customer);
+  }
+
+  @Get("/db/{customerId}")
+  public Mono<Customer> getFromDB(@PathVariable Long customerId) {
+    return customerService.getCustomerFromDB(customerId);
+  }
+
+  @Get("/cache/{customerId}")
+  public Mono<Customer> getFromCache(@PathVariable Long customerId) {
+    return customerService.getCustomerFromCache(customerId);
   }
 
   @Get(value = "/stream", produces = MediaType.APPLICATION_JSON_STREAM)

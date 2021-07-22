@@ -69,4 +69,12 @@ public class CustomerService {
     return customerAerospikeReactiveRepository.saveCustomer(
         CustomerEntity.buildCustomerEntityFromCustomer(customer));
   }
+
+  public Mono<Customer> getCustomerFromDB(Long customerId) {
+    return customerReactiveRepository.findByCustomerId(customerId).map(Customer::new);
+  }
+
+  public Mono<Customer> getCustomerFromCache(Long customerId) {
+    return customerAerospikeReactiveRepository.findByCustomerId(customerId).map(Customer::new);
+  }
 }
